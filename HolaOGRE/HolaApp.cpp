@@ -1,5 +1,5 @@
 #include "HolaApp.h"
-
+#include <iostream>
 using namespace Ogre;
 
 // ocultar el panel y poner luz ambiente
@@ -30,6 +30,19 @@ bool HolaApp::keyPressed(const OgreBites::KeyboardEvent& evt)
 
 bool HolaApp::mousePressed(const OgreBites::MouseButtonEvent &  evt)
 {
+	rayScnQuery->setRay(cam->getCameraToViewportRay(
+		evt.x / (Real)mWindow->getViewport(0)->getActualWidth(),
+		evt.y / (Real)cam->getViewport()->getActualHeight()));
+	// coordenadas normalizadas en [0,1]
+	RaySceneQueryResult& qryResult = rayScnQuery->execute();
+	RaySceneQueryResult::iterator it = qryResult.begin();
+	while (it != qryResult.end()) {
+		if (it->movable->getName() == "Sinbad"){
+
+			it->movable->getParentSceneNode()->translate(10, 10, 10);
+		}
+		++it;
+	}
   //if (trayMgr->mousePressed(evt)) return true;
   return true;
 }
@@ -93,7 +106,7 @@ void HolaApp::setupScene(void)
   camNode->lookAt(Ogre::Vector3(0, 0, -1), Ogre::Node::TS_WORLD);
 
   // create the camera
-  Camera* cam = scnMgr->createCamera("Cam");
+  cam = scnMgr->createCamera("Cam");
   cam->setNearClipDistance(1); 
   cam->setFarClipDistance(10000);
   cam->setAutoAspectRatio(true);
@@ -110,8 +123,8 @@ void HolaApp::setupScene(void)
   //vp->setBackgroundColour(Ogre::ColourValue(1, 1, 1));
 
   // finally something to render
-  Ogre::Entity* ent = scnMgr->createEntity("Sinbad.mesh");
-  Ogre::SceneNode* node = scnMgr->getRootSceneNode()->createChildSceneNode();
+  Ogre::Entity* ent = scnMgr->createEntity("Sinbad","Sinbad.mesh");
+  Ogre::SceneNode* node = scnMgr->getRootSceneNode()->createChildSceneNode("nSinbad");
   //node->setPosition(0, 0, 25);
   node->scale(5, 5, 5);
   //node->showBoundingBox(true);
@@ -172,5 +185,9 @@ void HolaApp::setupScene(void)
  t->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
  t->setProjectiveTexturing(true, camRef);
  renderTexture->addListener(this);
+
+ //RAYO
+ rayScnQuery = scnMgr->createRayQuery(Ray());
+ rayScnQuery->setSortByDistance(true);
 }
 

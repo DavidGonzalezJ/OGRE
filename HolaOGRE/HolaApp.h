@@ -37,6 +37,8 @@ protected:
   OgreBites::TrayManager* trayMgr = nullptr;
   Ogre::SceneNode* lightNode = nullptr;
   Ogre::SceneNode* camNode = nullptr;
+  Ogre::RaySceneQuery * rayScnQuery = nullptr;
+  Ogre::Camera* cam = nullptr;
 
 };
 
