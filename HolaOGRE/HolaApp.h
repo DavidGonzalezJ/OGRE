@@ -6,8 +6,9 @@
 #include <OgreCameraMan.h>
 #include "Sinbad.h"
 
+
 class HolaApp :
-  public MyApplicationContext, public OgreBites::InputListener
+	public MyApplicationContext, public OgreBites::InputListener, public Ogre::RenderTargetListener
 {
 public:
   explicit HolaApp() : MyApplicationContext("HolaApp") { };
@@ -23,6 +24,11 @@ protected:
   virtual bool mouseMoved(const OgreBites::MouseMotionEvent& evt);
   virtual void frameRendered(const Ogre::FrameEvent &  evt);
 
+  // ocultar el panel y poner luz ambiente
+  virtual void preRenderTargetUpdate(const Ogre::RenderTargetEvent& evt);
+  // restablecer los cambios
+  virtual void postRenderTargetUpdate(const Ogre::RenderTargetEvent& evt);
+
   OgreBites::CameraMan* camMan = nullptr;
   Sinbad* sinBadMgr = nullptr;
 
@@ -31,6 +37,7 @@ protected:
   OgreBites::TrayManager* trayMgr = nullptr;
   Ogre::SceneNode* lightNode = nullptr;
   Ogre::SceneNode* camNode = nullptr;
+
 };
 
 
