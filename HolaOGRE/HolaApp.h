@@ -4,7 +4,7 @@
 #include "MyApplicationContext.h"
 #include <OgreTrays.h>
 #include <OgreCameraMan.h>
-#include "Sinbad.h"
+#include "SinbadMan.h"
 
 
 class HolaApp :
@@ -30,7 +30,9 @@ protected:
   virtual void postRenderTargetUpdate(const Ogre::RenderTargetEvent& evt);
 
   OgreBites::CameraMan* camMan = nullptr;
-  Sinbad* sinBadMgr = nullptr;
+  SinbadMan* sinBadMgr = nullptr;
+
+  std::vector<ObjectMan*> vecObjMan;
 
   Ogre::SceneManager* scnMgr = nullptr;
   //Gestor de paneles

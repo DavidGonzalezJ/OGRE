@@ -24,7 +24,10 @@
     <ClCompile Include="MyApplicationContext.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
-    <ClCompile Include="Sinbad.cpp">
+    <ClCompile Include="ObjectMan.cpp">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
+    <ClCompile Include="SinbadMan.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +38,10 @@
     <ClInclude Include="MyApplicationContext.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="Sinbad.h">
+    <ClInclude Include="ObjectMan.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="SinbadMan.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

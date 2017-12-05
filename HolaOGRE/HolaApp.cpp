@@ -16,6 +16,9 @@ void HolaApp::postRenderTargetUpdate(const Ogre::RenderTargetEvent& evt){
 void HolaApp::frameRendered(const FrameEvent &  evt)
 {
   //trayMgr->frameRendered(evt);
+	for (int i = 0; i < vecObjMan.size(); ++i){
+		vecObjMan[i]->frameRendered(evt);
+	}
 }
 
 bool HolaApp::keyPressed(const OgreBites::KeyboardEvent& evt)
@@ -28,7 +31,7 @@ bool HolaApp::keyPressed(const OgreBites::KeyboardEvent& evt)
   return true;
 }
 
-bool HolaApp::mousePressed(const OgreBites::MouseButtonEvent &  evt)
+bool HolaApp::mousePressed(const OgreBites::MouseButtonEvent & evt)
 {
 	rayScnQuery->setRay(cam->getCameraToViewportRay(
 		evt.x / (Real)mWindow->getViewport(0)->getActualWidth(),
@@ -36,14 +39,15 @@ bool HolaApp::mousePressed(const OgreBites::MouseButtonEvent &  evt)
 	// coordenadas normalizadas en [0,1]
 	RaySceneQueryResult& qryResult = rayScnQuery->execute();
 	RaySceneQueryResult::iterator it = qryResult.begin();
-	while (it != qryResult.end()) {
-		if (it->movable->getName() == "Sinbad"){
-
-			it->movable->getParentSceneNode()->translate(10, 10, 10);
-		}
+	if (it != qryResult.end()) {
+		//if (it->movable->getName() == "SinbadMan"){
+		it->movable->getParentSceneNode()->translate(10, 10, 10);
 		++it;
 	}
+	UserControl* pCtrl = any_cast<UserControl*>(it->movable->getUserObjectBindings().getUserAny());
+	pCtrl->getControl()->mousePicking(evt);
   //if (trayMgr->mousePressed(evt)) return true;
+	
   return true;
 }
 
@@ -64,11 +68,13 @@ void HolaApp::setupInput()
 
 void HolaApp::shutdown()
 {
-  scnMgr->removeRenderQueueListener(mOverlaySystem);
+  for (int i = 0; i< vecObjMan.size(); ++i) {
+	  delete vecObjMan[i];  }  scnMgr->removeRenderQueueListener(mOverlaySystem);
   delete trayMgr;  trayMgr = nullptr;
   delete sinBadMgr; sinBadMgr = nullptr;
   // do not forget to call the base 
   MyApplicationContext::shutdown();
+
 }
 
 void HolaApp::setup(void)
@@ -122,21 +128,14 @@ void HolaApp::setupScene(void)
   Viewport* vp = getRenderWindow()->addViewport(cam);
   //vp->setBackgroundColour(Ogre::ColourValue(1, 1, 1));
 
-  // finally something to render
-  Ogre::Entity* ent = scnMgr->createEntity("Sinbad","Sinbad.mesh");
-  Ogre::SceneNode* node = scnMgr->getRootSceneNode()->createChildSceneNode("nSinbad");
-  //node->setPosition(0, 0, 25);
-  node->scale(5, 5, 5);
-  //node->showBoundingBox(true);
-  //node->roll(Ogre::Degree(-45));
-  node->attachObject(ent);
-  sinBadMgr = new Sinbad(node);
+  Ogre::SceneNode* nodeSinbad = scnMgr->getRootSceneNode()->createChildSceneNode("nSinbadMan");
+  sinBadMgr = new SinbadMan(nodeSinbad);
+  vecObjMan.push_back(sinBadMgr);
   addInputListener(sinBadMgr);
 
-  camMan->setTarget(node);
 
   //PLANO
-  //  Plane plane(Vector3::UNIT_Y, 0);
+  //Plane plane(Vector3::UNIT_Y, 0);
   MeshPtr plane = MeshManager::getSingleton().createPlane("mFondo",
 	  ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
 	  Plane(Vector3::UNIT_Z, 0),
@@ -164,30 +163,29 @@ void HolaApp::setupScene(void)
   //se pone el nodo de la otra camara para que se sigan
   camNode->attachObject(camRef);
 
- //TEXTURA REFLEJO
- TexturePtr rttTex = TextureManager::getSingleton().createManual(
-	 "texRtt",
-	 ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-	 TEX_TYPE_2D,
-	 (Real)mWindow->getViewport(0)->getActualWidth(),
-	 (Real)cam->getViewport()->getActualHeight(),
-	 0, PF_R8G8B8, TU_RENDERTARGET);
- RenderTexture* renderTexture = rttTex->getBuffer()->getRenderTarget();
+	 //TEXTURA REFLEJO
+	 TexturePtr rttTex = TextureManager::getSingleton().createManual(
+		 "texRtt",
+		 ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+		 TEX_TYPE_2D,
+		 (Real)mWindow->getViewport(0)->getActualWidth(),
+		 (Real)cam->getViewport()->getActualHeight(),
+		 0, PF_R8G8B8, TU_RENDERTARGET);
+	 RenderTexture* renderTexture = rttTex->getBuffer()->getRenderTarget();
  
- Viewport * v = renderTexture->addViewport(camRef);
- v->setClearEveryFrame(true);
- v->setBackgroundColour(ColourValue::Black);
- TextureUnitState* t = eFondo->getSubEntity(0)->getMaterial()->
-	 getTechnique(0)->getPass(0)->
-	 createTextureUnitState("texRtt");
- t->setColourOperation(LBO_ADD); // backgroundColour -> black
- // LBO_MODULATE / LBO_REPLACE / LBO_ALPHA_BLEND;
- t->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
- t->setProjectiveTexturing(true, camRef);
- renderTexture->addListener(this);
+	 Viewport * v = renderTexture->addViewport(camRef);
+	 v->setClearEveryFrame(true);
+	 v->setBackgroundColour(ColourValue::Black);
+	 TextureUnitState* t = eFondo->getSubEntity(0)->getMaterial()->
+		 getTechnique(0)->getPass(0)->
+		 createTextureUnitState("texRtt");
+	 t->setColourOperation(LBO_ADD); // backgroundColour -> black
+	 // LBO_MODULATE / LBO_REPLACE / LBO_ALPHA_BLEND;
+	 t->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
+	 t->setProjectiveTexturing(true, camRef);
+	 renderTexture->addListener(this);
 
- //RAYO
- rayScnQuery = scnMgr->createRayQuery(Ray());
- rayScnQuery->setSortByDistance(true);
+	 //RAYO
+	 rayScnQuery = scnMgr->createRayQuery(Ray());
+	 rayScnQuery->setSortByDistance(true);
 }
-

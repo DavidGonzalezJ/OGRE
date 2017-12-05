@@ -14,12 +14,14 @@
     <ClCompile Include="HolaApp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyApplicationContext.cpp" />
-    <ClCompile Include="Sinbad.cpp" />
+    <ClCompile Include="ObjectMan.cpp" />
+    <ClCompile Include="SinbadMan.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HolaApp.h" />
     <ClInclude Include="MyApplicationContext.h" />
-    <ClInclude Include="Sinbad.h" />
+    <ClInclude Include="ObjectMan.h" />
+    <ClInclude Include="SinbadMan.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A8360B86-8F85-447E-AB54-6ACC1B494CB5}</ProjectGuid>
