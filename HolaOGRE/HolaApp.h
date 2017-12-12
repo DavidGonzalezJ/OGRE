@@ -5,7 +5,7 @@
 #include <OgreTrays.h>
 #include <OgreCameraMan.h>
 #include "SinbadMan.h"
-
+#include "ReflejoMan.h"
 
 class HolaApp :
 	public MyApplicationContext, public OgreBites::InputListener, public Ogre::RenderTargetListener
@@ -31,6 +31,7 @@ protected:
 
   OgreBites::CameraMan* camMan = nullptr;
   SinbadMan* sinBadMgr = nullptr;
+  ReflejoMan* planeMgr = nullptr;
 
   std::vector<ObjectMan*> vecObjMan;
 

@@ -15,12 +15,14 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyApplicationContext.cpp" />
     <ClCompile Include="ObjectMan.cpp" />
+    <ClCompile Include="ReflejoMan.cpp" />
     <ClCompile Include="SinbadMan.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HolaApp.h" />
     <ClInclude Include="MyApplicationContext.h" />
     <ClInclude Include="ObjectMan.h" />
+    <ClInclude Include="ReflejoMan.h" />
     <ClInclude Include="SinbadMan.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

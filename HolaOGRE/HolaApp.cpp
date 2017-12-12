@@ -33,6 +33,7 @@ bool HolaApp::keyPressed(const OgreBites::KeyboardEvent& evt)
 
 bool HolaApp::mousePressed(const OgreBites::MouseButtonEvent & evt)
 {
+	
 	rayScnQuery->setRay(cam->getCameraToViewportRay(
 		evt.x / (Real)mWindow->getViewport(0)->getActualWidth(),
 		evt.y / (Real)cam->getViewport()->getActualHeight()));
@@ -43,11 +44,11 @@ bool HolaApp::mousePressed(const OgreBites::MouseButtonEvent & evt)
 		//if (it->movable->getName() == "SinbadMan"){
 		it->movable->getParentSceneNode()->translate(10, 10, 10);
 		++it;
-	}
 	UserControl* pCtrl = any_cast<UserControl*>(it->movable->getUserObjectBindings().getUserAny());
 	pCtrl->getControl()->mousePicking(evt);
+	}
   //if (trayMgr->mousePressed(evt)) return true;
-	
+
   return true;
 }
 
@@ -68,13 +69,15 @@ void HolaApp::setupInput()
 
 void HolaApp::shutdown()
 {
-  for (int i = 0; i< vecObjMan.size(); ++i) {
-	  delete vecObjMan[i];  }  scnMgr->removeRenderQueueListener(mOverlaySystem);
+ 
+  scnMgr->removeRenderQueueListener(mOverlaySystem);
   delete trayMgr;  trayMgr = nullptr;
   delete sinBadMgr; sinBadMgr = nullptr;
+  for (int i = 0; i< vecObjMan.size(); ++i) {
+	  delete vecObjMan[i];
+  }
   // do not forget to call the base 
   MyApplicationContext::shutdown();
-
 }
 
 void HolaApp::setup(void)
@@ -134,58 +137,11 @@ void HolaApp::setupScene(void)
   addInputListener(sinBadMgr);
 
 
-  //PLANO
-  //Plane plane(Vector3::UNIT_Y, 0);
-  MeshPtr plane = MeshManager::getSingleton().createPlane("mFondo",
-	  ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-	  Plane(Vector3::UNIT_Z, 0),
-	  (Real)mWindow->getViewport(0)->getActualWidth(),
-	  (Real)cam->getViewport()->getActualHeight(),
-	  10, 10, true, 1, 1.0, 1.0, Vector3::UNIT_Y);
+  Ogre::SceneNode* nodePlane = scnMgr->getRootSceneNode()->createChildSceneNode("nPlane");
+  planeMgr = new ReflejoMan(nodeSinbad);
+  vecObjMan.push_back(planeMgr);
 
-  Entity* eFondo = scnMgr->createEntity("eFondo", "mFondo");
-
-  //TEXTURA
-  eFondo->getSubEntity(0)->getMaterial()->
-	  getTechnique(0)->getPass(0) ->
-	  createTextureUnitState("RustedMetal.jpg");
-  Ogre::SceneNode* nodePlano = scnMgr->getRootSceneNode()->createChildSceneNode("nFondo");
-  nodePlano->attachObject(eFondo);
- 
-  //Camara reflejo
-  Camera* camRef = scnMgr->createCamera("RefCam");
-  camRef->setNearClipDistance(cam->getNearClipDistance());
-  camRef->setFarClipDistance(cam->getFarClipDistance());
-  camRef->setAutoAspectRatio(cam->getAutoAspectRatio());
-
-  camRef->enableReflection(Plane(Vector3::UNIT_Z, 0));
-  camRef->enableCustomNearClipPlane(Plane(Vector3::UNIT_Z, 0));
-  //se pone el nodo de la otra camara para que se sigan
-  camNode->attachObject(camRef);
-
-	 //TEXTURA REFLEJO
-	 TexturePtr rttTex = TextureManager::getSingleton().createManual(
-		 "texRtt",
-		 ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		 TEX_TYPE_2D,
-		 (Real)mWindow->getViewport(0)->getActualWidth(),
-		 (Real)cam->getViewport()->getActualHeight(),
-		 0, PF_R8G8B8, TU_RENDERTARGET);
-	 RenderTexture* renderTexture = rttTex->getBuffer()->getRenderTarget();
- 
-	 Viewport * v = renderTexture->addViewport(camRef);
-	 v->setClearEveryFrame(true);
-	 v->setBackgroundColour(ColourValue::Black);
-	 TextureUnitState* t = eFondo->getSubEntity(0)->getMaterial()->
-		 getTechnique(0)->getPass(0)->
-		 createTextureUnitState("texRtt");
-	 t->setColourOperation(LBO_ADD); // backgroundColour -> black
-	 // LBO_MODULATE / LBO_REPLACE / LBO_ALPHA_BLEND;
-	 t->setTextureAddressingMode(TextureUnitState::TAM_CLAMP);
-	 t->setProjectiveTexturing(true, camRef);
-	 renderTexture->addListener(this);
-
-	 //RAYO
-	 rayScnQuery = scnMgr->createRayQuery(Ray());
-	 rayScnQuery->setSortByDistance(true);
+ //RAYO
+	rayScnQuery = scnMgr->createRayQuery(Ray());
+	rayScnQuery->setSortByDistance(true);
 }

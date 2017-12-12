@@ -8,11 +8,25 @@ SinbadMan::SinbadMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	ent = node->getCreator()->createEntity("Sinbad", "Sinbad.mesh");
 	ent->setQueryFlags(MY_QUERY_MASK);
 	setObjMan(ent);
+	RunTopState = ent->getAnimationState("RunTop");
+	RunTopState->setLoop(true);
+	RunTopState->setEnabled(true);
+
+	RunBaseState = ent->getAnimationState("RunBase");
+	RunBaseState->setLoop(true);
+	RunBaseState->setEnabled(true);
+
+	espada = node->getCreator()->createEntity("espada", "Sword.mesh");
+	ent->attachObjectToBone("Handle.L", espada);
 }
 
 
 SinbadMan::~SinbadMan()
 {
+	delete ent; ent = nullptr;
+	delete RunTopState; RunTopState = nullptr;
+	delete RunBaseState; RunBaseState = nullptr;
+	delete espada; espada= nullptr;
 }
 
 bool SinbadMan::keyPressed(const OgreBites::KeyboardEvent& evt)
@@ -51,4 +65,9 @@ bool SinbadMan::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 	//trayMgr->mouseMoved(evt);
 
 	return true;
+}
+void SinbadMan::frameRendered(const Ogre::FrameEvent & evt) {
+	RunBaseState->addTime(evt.timeSinceLastFrame);
+	RunTopState->addTime(evt.timeSinceLastFrame);
+
 }

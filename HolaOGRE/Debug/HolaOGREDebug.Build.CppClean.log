@@ -1,10 +1,11 @@
 c:\hlocal\ogre\holaogre\debug\vc120.pdb
 c:\hlocal\ogre\holaogre\debug\vc120.idb
-c:\hlocal\ogre\holaogre\debug\myapplicationcontext.obj
 c:\hlocal\ogre\holaogre\debug\holaapp.obj
-c:\hlocal\ogre\holaogre\debug\objectman.obj
-c:\hlocal\ogre\holaogre\debug\sinbadman.obj
 c:\hlocal\ogre\holaogre\debug\main.obj
+c:\hlocal\ogre\holaogre\debug\myapplicationcontext.obj
+c:\hlocal\ogre\holaogre\debug\objectman.obj
+c:\hlocal\ogre\holaogre\debug\reflejoman.obj
+c:\hlocal\ogre\holaogre\debug\sinbadman.obj
 c:\hlocal\ogre\bin\holaogredebug.ilk
 c:\hlocal\ogre\bin\holaogredebug.exe
 c:\hlocal\ogre\bin\holaogredebug.pdb
