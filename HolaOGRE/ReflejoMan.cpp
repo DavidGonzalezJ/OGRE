@@ -7,9 +7,9 @@ ReflejoMan::ReflejoMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	//PLANO
 	MeshPtr plane = MeshManager::getSingleton().createPlane("mFondo",
 		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		Plane(Vector3::UNIT_Z, 0), (Real)node->getCreator()->getCamera("Cam")->getViewport()->getActualWidth(),
+		Plane(Vector3::UNIT_Y, -5), (Real)node->getCreator()->getCamera("Cam")->getViewport()->getActualWidth(),
 		(Real)node->getCreator()->getCamera("Cam")->getViewport()->getActualHeight(),
-		10, 10, true, 1, 1.0, 1.0, Vector3::UNIT_Y);
+		10, 10, true, 1, 1.0, 1.0, Vector3::UNIT_Z);
 
 	Entity* eFondo = node->getCreator()->createEntity("eFondo", "mFondo");
 	eFondo->setQueryFlags(0);
@@ -27,8 +27,8 @@ ReflejoMan::ReflejoMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	camRef->setFarClipDistance(node->getCreator()->getCamera("Cam")->getFarClipDistance());
 	camRef->setAutoAspectRatio(node->getCreator()->getCamera("Cam")->getAutoAspectRatio());
 
-	camRef->enableReflection(Plane(Vector3::UNIT_Z, 0));
-	camRef->enableCustomNearClipPlane(Plane(Vector3::UNIT_Z, 0));
+	camRef->enableReflection(Plane(Vector3::UNIT_Y, -5));
+	camRef->enableCustomNearClipPlane(Plane(Vector3::UNIT_Y, -5));
 	//se pone el nodo de la otra camara para que se sigan
 	node->getCreator()->getCamera("Cam")->getParentSceneNode()->attachObject(camRef);
 

@@ -19,4 +19,5 @@ public:
 	Ogre::AnimationState* RunTopState = nullptr;
 	Ogre::AnimationState* RunBaseState = nullptr;
 	Ogre::MovableObject* espada = nullptr;
+	Ogre::AnimationState* animationState;
 };

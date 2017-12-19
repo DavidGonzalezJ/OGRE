@@ -18,6 +18,45 @@ SinbadMan::SinbadMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 
 	espada = node->getCreator()->createEntity("espada", "Sword.mesh");
 	ent->attachObjectToBone("Handle.L", espada);
+
+	Real duracion = 20;
+	Animation * animation = node->getCreator()->createAnimation("animSinbad", duracion);
+	NodeAnimationTrack * track = animation->createNodeTrack(0);
+	track->setAssociatedNode(node->getCreator()->getSceneNode("nSinbadMan"));
+
+
+	Vector3 keyframePos(0,0,0);
+	Real tamDesplazamiento = 40;
+	Real longitudPaso = duracion / 4.0;
+	TransformKeyFrame * kf;; // 5 keyFrames: origen(0), arriba, origen, abajo, origen(4)
+	kf = track->createNodeKeyFrame(longitudPaso * 0); // Keyframe 0: origen.
+	kf->setTranslate(keyframePos); // Origen: Vector3
+
+	kf = track->createNodeKeyFrame(longitudPaso * 1); // Keyframe 1: arriba.
+	keyframePos += Ogre::Vector3::UNIT_Z * tamDesplazamiento;
+	kf->setTranslate(keyframePos); // Adelante
+
+	kf = track->createNodeKeyFrame(longitudPaso * 2);
+	kf->setRotation(Quaternion(Radian(Degree(0)), Vector3(0, 1, 0)));
+
+
+	kf = track->createNodeKeyFrame(longitudPaso * 4); // Keyframe 2: arriba.
+	keyframePos += Ogre::Vector3::UNIT_X * tamDesplazamiento;
+	kf->setTranslate(keyframePos); // Derecha
+	kf = track->createNodeKeyFrame(longitudPaso * 5);
+	kf->setRotation(Quaternion(Radian(Degree(90)), Vector3(0, 1, 0)));
+
+	kf = track->createNodeKeyFrame(longitudPaso * 6); // Keyframe 3: atras.
+	keyframePos -= Ogre::Vector3::UNIT_Z * tamDesplazamiento;
+	kf->setTranslate(keyframePos); // Atras
+
+	kf = track->createNodeKeyFrame(longitudPaso * 7); // Keyframe : izquierda.
+	keyframePos -= Ogre::Vector3::UNIT_X * tamDesplazamiento;
+	kf->setTranslate(keyframePos); // Izquierda
+
+	animationState = node->getCreator()->createAnimationState("animSinbad");
+	animationState->setLoop(true);
+	animationState->setEnabled(true);
 }
 
 
@@ -69,5 +108,5 @@ bool SinbadMan::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 void SinbadMan::frameRendered(const Ogre::FrameEvent & evt) {
 	RunBaseState->addTime(evt.timeSinceLastFrame);
 	RunTopState->addTime(evt.timeSinceLastFrame);
-
+	animationState->addTime(evt.timeSinceLastFrame);
 }
