@@ -33,19 +33,19 @@ bool HolaApp::keyPressed(const OgreBites::KeyboardEvent& evt)
 
 bool HolaApp::mousePressed(const OgreBites::MouseButtonEvent & evt)
 {
-	
+
 	rayScnQuery->setRay(cam->getCameraToViewportRay(
 		evt.x / (Real)mWindow->getViewport(0)->getActualWidth(),
-		evt.y / (Real)cam->getViewport()->getActualHeight()));
+		evt.y / (Real)mWindow->getViewport(0)->getActualHeight()));
 	// coordenadas normalizadas en [0,1]
 	RaySceneQueryResult& qryResult = rayScnQuery->execute();
 	RaySceneQueryResult::iterator it = qryResult.begin();
-	if (it != qryResult.end()) {
-		//if (it->movable->getName() == "SinbadMan"){
-		it->movable->getParentSceneNode()->translate(10, 10, 10);
+	while (it != qryResult.end()) {
+		if (it->movable->getName() == "SinbadMan")
+			it->movable->getParentSceneNode()->translate(10, 10, 10);
 		++it;
-	UserControl* pCtrl = any_cast<UserControl*>(it->movable->getUserObjectBindings().getUserAny());
-	pCtrl->getControl()->mousePicking(evt);
+	//UserControl* pCtrl = any_cast<UserControl*>(it->movable->getUserObjectBindings().getUserAny());
+	//pCtrl->getControl()->mousePicking(evt);
 	}
   //if (trayMgr->mousePressed(evt)) return true;
 
@@ -69,13 +69,12 @@ void HolaApp::setupInput()
 
 void HolaApp::shutdown()
 {
- 
   scnMgr->removeRenderQueueListener(mOverlaySystem);
   delete trayMgr;  trayMgr = nullptr;
-  delete sinBadMgr; sinBadMgr = nullptr;
-  for (int i = 0; i< vecObjMan.size(); ++i) {
+  //delete sinBadMgr; sinBadMgr = nullptr;
+  /*for (int i = 0; i < vecObjMan.size(); ++i) {
 	  delete vecObjMan[i];
-  }
+  }*/
   // do not forget to call the base 
   MyApplicationContext::shutdown();
 }
@@ -109,6 +108,18 @@ void HolaApp::setupScene(void)
   lightNode->setPosition(0, 0, 100);
   lightNode->attachObject(light);
 
+  Light* spotLight = scnMgr->createLight("SpotLight");
+  spotLight->setDiffuseColour(0, 0, 1.0);
+  spotLight->setSpecularColour(0, 0, 1.0);
+  spotLight->setType(Light::LT_SPOTLIGHT);
+  spotLight->setDirection(Vector3::NEGATIVE_UNIT_Z);
+  SceneNode* spotLightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
+  spotLightNode->attachObject(spotLight);
+  spotLightNode->setDirection(-1, -1, 0);
+  spotLightNode->setPosition(Vector3(200, 200, 0));
+  spotLight->setSpotlightRange(Degree(60), Degree(100));
+
+
   // also need to tell where we are
   camNode = scnMgr->getRootSceneNode()->createChildSceneNode();
   camNode->setPosition(0, 0, 100);
@@ -136,7 +147,17 @@ void HolaApp::setupScene(void)
   vecObjMan.push_back(sinBadMgr);
   addInputListener(sinBadMgr);
 
+  //Mosca
+  Ogre::SceneNode* nodeKnot = scnMgr->getRootSceneNode()->createChildSceneNode("nKnot");
+  knotMgr = new KnotFly(nodeKnot);
+  vecObjMan.push_back(knotMgr);
 
+  //Bomba
+  Ogre::SceneNode* nodeBomb = scnMgr->getRootSceneNode()->createChildSceneNode("nBomb");
+  bombMgr = new BombMan(nodeBomb);
+  vecObjMan.push_back(bombMgr);
+
+  //Plano
   Ogre::SceneNode* nodePlane = scnMgr->getRootSceneNode()->createChildSceneNode("nPlane");
   planeMgr = new ReflejoMan(nodeSinbad);
   vecObjMan.push_back(planeMgr);

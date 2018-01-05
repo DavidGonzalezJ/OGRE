@@ -18,6 +18,7 @@ public:
 	Ogre::Entity* ent = nullptr;
 	Ogre::AnimationState* RunTopState = nullptr;
 	Ogre::AnimationState* RunBaseState = nullptr;
-	Ogre::MovableObject* espada = nullptr;
+	Ogre::MovableObject* espadaR = nullptr;
+	Ogre::MovableObject* espadaL = nullptr;
 	Ogre::AnimationState* animationState;
 };

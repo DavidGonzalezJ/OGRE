@@ -16,42 +16,72 @@ SinbadMan::SinbadMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	RunBaseState->setLoop(true);
 	RunBaseState->setEnabled(true);
 
-	espada = node->getCreator()->createEntity("espada", "Sword.mesh");
-	ent->attachObjectToBone("Handle.L", espada);
+	espadaL = node->getCreator()->createEntity("espadaL", "Sword.mesh");
+	ent->attachObjectToBone("Handle.L", espadaL);
 
-	Real duracion = 20;
+	espadaR = node->getCreator()->createEntity("espadaR", "Sword.mesh");
+	ent->attachObjectToBone("Sheath.R", espadaR);
+
+
+	Real duracion = 24;
 	Animation * animation = node->getCreator()->createAnimation("animSinbad", duracion);
 	NodeAnimationTrack * track = animation->createNodeTrack(0);
 	track->setAssociatedNode(node->getCreator()->getSceneNode("nSinbadMan"));
 
 
-	Vector3 keyframePos(0,0,0);
 	Real tamDesplazamiento = 40;
-	Real longitudPaso = duracion / 4.0;
-	TransformKeyFrame * kf;; // 5 keyFrames: origen(0), arriba, origen, abajo, origen(4)
-	kf = track->createNodeKeyFrame(longitudPaso * 0); // Keyframe 0: origen.
+	node->setPosition(node->getPosition().x - tamDesplazamiento / 2,
+		node->getPosition().y, node->getPosition().z - tamDesplazamiento / 2);
+	Vector3 keyframePos(-20,0,-20);
+	Real longitudPaso = 20 / 4.0;
+	Real longitudPasoGiro = 4 / 4;
+	Real pasoActual=0;
+	TransformKeyFrame * kf; // 5 keyFrames: origen(0), arriba, origen, abajo, origen(4)
+	
+	kf = track->createNodeKeyFrame(pasoActual); // Keyframe 0: origen.
 	kf->setTranslate(keyframePos); // Origen: Vector3
 
-	kf = track->createNodeKeyFrame(longitudPaso * 1); // Keyframe 1: arriba.
+	pasoActual += longitudPaso;
+	kf = track->createNodeKeyFrame(pasoActual); // Keyframe 1: arriba.
 	keyframePos += Ogre::Vector3::UNIT_Z * tamDesplazamiento;
 	kf->setTranslate(keyframePos); // Adelante
 
-	kf = track->createNodeKeyFrame(longitudPaso * 2);
-	kf->setRotation(Quaternion(Radian(Degree(0)), Vector3(0, 1, 0)));
+	pasoActual += longitudPasoGiro;
+	kf = track->createNodeKeyFrame(pasoActual);
+	kf->setRotation(Quaternion(Degree(90), Vector3(0, 1, 0)));
+	kf->setTranslate(keyframePos); // Adelante
 
-
-	kf = track->createNodeKeyFrame(longitudPaso * 4); // Keyframe 2: arriba.
+	pasoActual += longitudPaso;
+	kf = track->createNodeKeyFrame(pasoActual); // Keyframe 2: arriba.
+	kf->setRotation(Quaternion(Degree(90), Vector3(0, 1, 0)));
 	keyframePos += Ogre::Vector3::UNIT_X * tamDesplazamiento;
 	kf->setTranslate(keyframePos); // Derecha
-	kf = track->createNodeKeyFrame(longitudPaso * 5);
-	kf->setRotation(Quaternion(Radian(Degree(90)), Vector3(0, 1, 0)));
 
-	kf = track->createNodeKeyFrame(longitudPaso * 6); // Keyframe 3: atras.
+	pasoActual += longitudPasoGiro;
+	kf = track->createNodeKeyFrame(pasoActual);
+	kf->setRotation(Quaternion(Degree(180), Vector3(0, 1, 0)));
+	kf->setTranslate(keyframePos); // Derecha
+
+	pasoActual += longitudPaso;
+	kf = track->createNodeKeyFrame(pasoActual); // Keyframe 3: atras.
 	keyframePos -= Ogre::Vector3::UNIT_Z * tamDesplazamiento;
+	kf->setRotation(Quaternion(Degree(180), Vector3(0, 1, 0)));
 	kf->setTranslate(keyframePos); // Atras
 
-	kf = track->createNodeKeyFrame(longitudPaso * 7); // Keyframe : izquierda.
+	pasoActual += longitudPasoGiro;
+	kf = track->createNodeKeyFrame(pasoActual); // Keyframe : izquierda.
+	kf->setRotation(Quaternion(Degree(270), Vector3(0, 1, 0)));
+	kf->setTranslate(keyframePos); // Izquierda
+
+	pasoActual += longitudPaso;
+	kf = track->createNodeKeyFrame(pasoActual); // Keyframe 3: atras.
 	keyframePos -= Ogre::Vector3::UNIT_X * tamDesplazamiento;
+	kf->setRotation(Quaternion(Degree(270), Vector3(0, 1, 0)));
+	kf->setTranslate(keyframePos); // Atras
+
+	pasoActual += longitudPasoGiro;
+	kf = track->createNodeKeyFrame(pasoActual); // Keyframe : izquierda.
+	kf->setRotation(Quaternion(Degree(360), Vector3(0, 1, 0)));
 	kf->setTranslate(keyframePos); // Izquierda
 
 	animationState = node->getCreator()->createAnimationState("animSinbad");
@@ -63,9 +93,8 @@ SinbadMan::SinbadMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 SinbadMan::~SinbadMan()
 {
 	delete ent; ent = nullptr;
-	delete RunTopState; RunTopState = nullptr;
-	delete RunBaseState; RunBaseState = nullptr;
-	delete espada; espada= nullptr;
+	delete espadaL; espadaL = nullptr;
+	delete espadaR; espadaR= nullptr;
 }
 
 bool SinbadMan::keyPressed(const OgreBites::KeyboardEvent& evt)
@@ -108,5 +137,5 @@ bool SinbadMan::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 void SinbadMan::frameRendered(const Ogre::FrameEvent & evt) {
 	RunBaseState->addTime(evt.timeSinceLastFrame);
 	RunTopState->addTime(evt.timeSinceLastFrame);
-	animationState->addTime(evt.timeSinceLastFrame);
+	animationState->addTime(evt.timeSinceLastFrame);
 }

@@ -6,6 +6,8 @@
 #include <OgreCameraMan.h>
 #include "SinbadMan.h"
 #include "ReflejoMan.h"
+#include "KnotFly.h"
+#include "BombMan.h"
 
 class HolaApp :
 	public MyApplicationContext, public OgreBites::InputListener, public Ogre::RenderTargetListener
@@ -31,6 +33,9 @@ protected:
 
   OgreBites::CameraMan* camMan = nullptr;
   SinbadMan* sinBadMgr = nullptr;
+  KnotFly* knotMgr = nullptr;
+  BombMan* bombMgr = nullptr;
+
   ReflejoMan* planeMgr = nullptr;
 
   std::vector<ObjectMan*> vecObjMan;

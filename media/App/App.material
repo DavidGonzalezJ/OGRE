@@ -1,0 +1,57 @@
+material "Knot"
+{
+	technique
+	{
+		pass
+		{
+
+			texture_unit
+			{
+				texture MtlPlat2.jpg
+			}
+		}
+	}
+}
+material "Bomb"
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.75 0.75 0.75
+
+			texture_unit
+			{
+				texture BumpyMetal.jpg
+			}
+		}
+	}
+}
+
+material "Floor"
+{
+ 	technique
+ 	{
+  		pass
+  		{
+  			//ambient 0.5 0.5 0.5
+   			diffuse 0.5 0.5 0.5
+ 			
+			texture_unit // Texture unit 0
+   			{ 
+    				texture RustedMetal.jpg
+    				rotate_anim 0.1 0.0
+    				color_op add
+   			}
+
+   			texture_unit // Texture unit 1 (this is a multitexture pass)
+   			{ 
+    				texture Water01.jpg
+    				scroll_anim 0.0 0.3
+    				scale 2 2 
+    				colour_op modulate
+			}
+   	
+		}
+  	}
+}

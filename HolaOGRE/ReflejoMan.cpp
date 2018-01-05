@@ -7,19 +7,22 @@ ReflejoMan::ReflejoMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	//PLANO
 	MeshPtr plane = MeshManager::getSingleton().createPlane("mFondo",
 		ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-		Plane(Vector3::UNIT_Y, -5), (Real)node->getCreator()->getCamera("Cam")->getViewport()->getActualWidth(),
-		(Real)node->getCreator()->getCamera("Cam")->getViewport()->getActualHeight(),
-		10, 10, true, 1, 1.0, 1.0, Vector3::UNIT_Z);
+		Plane(Vector3::UNIT_Y, -5), 60,
+		60,
+		10, 10, true, 1, 3.0, 3.0, Vector3::UNIT_Z);
 
 	Entity* eFondo = node->getCreator()->createEntity("eFondo", "mFondo");
 	eFondo->setQueryFlags(0);
-
+	
+	eFondo->getSubEntity(0)->setMaterialName("Floor");
+	/*
 	//TEXTURA
 	eFondo->getSubEntity(0)->getMaterial()->
 		getTechnique(0)->getPass(0) ->
-		createTextureUnitState("RustedMetal.jpg");
+		createTextureUnitState("RustedMetal.jpg");*/
 	Ogre::SceneNode* nodePlano = node->getCreator()->getRootSceneNode()->createChildSceneNode("nFondo");
 	nodePlano->attachObject(eFondo);
+	
 
 	//Camara reflejo
 	Camera* camRef = node->getCreator()->createCamera("RefCam");
