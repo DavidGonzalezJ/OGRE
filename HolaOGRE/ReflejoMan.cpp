@@ -12,7 +12,7 @@ ReflejoMan::ReflejoMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 		10, 10, true, 1, 3.0, 3.0, Vector3::UNIT_Z);
 
 	Entity* eFondo = node->getCreator()->createEntity("eFondo", "mFondo");
-	eFondo->setQueryFlags(0);
+	eFondo->setQueryFlags(MY_QUERY_IGNORE);
 	
 	eFondo->getSubEntity(0)->setMaterialName("Floor");
 	/*
@@ -34,8 +34,8 @@ ReflejoMan::ReflejoMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	camRef->enableCustomNearClipPlane(Plane(Vector3::UNIT_Y, -5));
 	//se pone el nodo de la otra camara para que se sigan
 	node->getCreator()->getCamera("Cam")->getParentSceneNode()->attachObject(camRef);
+	camRef->setQueryFlags(MY_QUERY_IGNORE);
 
-	
 	//TEXTURA REFLEJO
 	TexturePtr rttTex = TextureManager::getSingleton().createManual(
 		"texRtt",

@@ -6,8 +6,8 @@ KnotFly::KnotFly(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 {
 	ent = node->getCreator()->createEntity("Knot", "knot.mesh");
 	ent->setMaterialName("Knot");
+	ent->setQueryFlags(MY_QUERY_INTERACT);
 	node->setScale(Vector3(0.012, 0.012, 0.012));
-	//ent->setQueryFlags(MY_QUERY_MASK);
 	setObjMan(ent);
 	sinbad = node->getCreator()->getSceneNode("nSinbadMan");
 	node->setPosition(sinbad->getPosition().x, sinbad->getPosition().y + 8 , sinbad->getPosition().z);

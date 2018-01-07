@@ -41,13 +41,13 @@ protected:
   std::vector<ObjectMan*> vecObjMan;
 
   Ogre::SceneManager* scnMgr = nullptr;
+  
   //Gestor de paneles
   OgreBites::TrayManager* trayMgr = nullptr;
   Ogre::SceneNode* lightNode = nullptr;
   Ogre::SceneNode* camNode = nullptr;
   Ogre::RaySceneQuery * rayScnQuery = nullptr;
   Ogre::Camera* cam = nullptr;
-
 };
 
 

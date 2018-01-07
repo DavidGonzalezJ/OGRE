@@ -1,7 +1,10 @@
 #include "HolaApp.h"
 #include <iostream>
 using namespace Ogre;
-
+enum QueryFlags {
+	MY_QUERY_IGNORE = 1 << 1,
+	MY_QUERY_INTERACT = 1 << 0
+};
 // ocultar el panel y poner luz ambiente
 void HolaApp::preRenderTargetUpdate(const Ogre::RenderTargetEvent& evt){
 	scnMgr->setAmbientLight(ColourValue(1, 1, 1));
@@ -27,22 +30,40 @@ bool HolaApp::keyPressed(const OgreBites::KeyboardEvent& evt)
   {
     mRoot->queueEndRendering();
   }
+  else if (evt.keysym.sym == SDLK_t) {
+	  if (camMan->getTarget()->getName() != "nSinbadMan")
+		  camMan->setTarget(scnMgr->getSceneNode("nSinbadMan"));
+	  else
+		  camMan->setTarget(scnMgr->getRootSceneNode());
+
+  }
  
   return true;
 }
 
 bool HolaApp::mousePressed(const OgreBites::MouseButtonEvent & evt)
 {
-
+	///Rayo donde haces click con el raton
 	rayScnQuery->setRay(cam->getCameraToViewportRay(
 		evt.x / (Real)mWindow->getViewport(0)->getActualWidth(),
 		evt.y / (Real)mWindow->getViewport(0)->getActualHeight()));
+	
+	rayScnQuery->setSortByDistance(true);
+	//Mascara se aplica
+	rayScnQuery->setQueryMask(MY_QUERY_INTERACT);
 	// coordenadas normalizadas en [0,1]
 	RaySceneQueryResult& qryResult = rayScnQuery->execute();
 	RaySceneQueryResult::iterator it = qryResult.begin();
+	//BIEN
+
 	while (it != qryResult.end()) {
-		if (it->movable->getName() == "SinbadMan")
-			it->movable->getParentSceneNode()->translate(10, 10, 10);
+		std::cout << "click" << it->movable->getName() << std::endl;
+		//LISTENER
+		for each (ObjectMan* var in vecObjMan)
+		{
+			var->interact(it->movable->getName());
+		}
+		//it->movable->getParentSceneNode()->translate(10, 10, 10);
 		++it;
 	//UserControl* pCtrl = any_cast<UserControl*>(it->movable->getUserObjectBindings().getUserAny());
 	//pCtrl->getControl()->mousePicking(evt);
@@ -71,6 +92,8 @@ void HolaApp::shutdown()
 {
   scnMgr->removeRenderQueueListener(mOverlaySystem);
   delete trayMgr;  trayMgr = nullptr;
+  scnMgr->destroyQuery(rayScnQuery);
+
   //delete sinBadMgr; sinBadMgr = nullptr;
   /*for (int i = 0; i < vecObjMan.size(); ++i) {
 	  delete vecObjMan[i];
@@ -132,6 +155,7 @@ void HolaApp::setupScene(void)
   cam->setAutoAspectRatio(true);
   //cam->setPolygonMode(Ogre::PM_WIREFRAME);  // en material
   camNode->attachObject(cam);
+  cam->setQueryFlags(MY_QUERY_IGNORE);
   
   camMan = new OgreBites::CameraMan(camNode);
   camMan->setStyle(OgreBites::CS_ORBIT);
@@ -163,6 +187,5 @@ void HolaApp::setupScene(void)
   vecObjMan.push_back(planeMgr);
 
  //RAYO
-	rayScnQuery = scnMgr->createRayQuery(Ray());
-	rayScnQuery->setSortByDistance(true);
+	rayScnQuery = scnMgr->createRayQuery(Ray(), MY_QUERY_INTERACT);
 }

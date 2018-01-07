@@ -1,12 +1,14 @@
 #include "SinbadMan.h"
 #include <OgreTrays.h>
 #include <Ogre.h>
+#include <iostream>
+
 using namespace Ogre;
 
 SinbadMan::SinbadMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 {
 	ent = node->getCreator()->createEntity("Sinbad", "Sinbad.mesh");
-	ent->setQueryFlags(MY_QUERY_MASK);
+	ent->setQueryFlags(MY_QUERY_INTERACT);
 	setObjMan(ent);
 	RunTopState = ent->getAnimationState("RunTop");
 	RunTopState->setLoop(true);
@@ -22,16 +24,16 @@ SinbadMan::SinbadMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	espadaR = node->getCreator()->createEntity("espadaR", "Sword.mesh");
 	ent->attachObjectToBone("Sheath.R", espadaR);
 
-
+	//ANIMACION CUADRADO
 	Real duracion = 24;
 	Animation * animation = node->getCreator()->createAnimation("animSinbad", duracion);
 	NodeAnimationTrack * track = animation->createNodeTrack(0);
 	track->setAssociatedNode(node->getCreator()->getSceneNode("nSinbadMan"));
 
-
 	Real tamDesplazamiento = 40;
 	node->setPosition(node->getPosition().x - tamDesplazamiento / 2,
 		node->getPosition().y, node->getPosition().z - tamDesplazamiento / 2);
+
 	Vector3 keyframePos(-20,0,-20);
 	Real longitudPaso = 20 / 4.0;
 	Real longitudPasoGiro = 4 / 4;
@@ -134,8 +136,78 @@ bool SinbadMan::mouseMoved(const OgreBites::MouseMotionEvent& evt)
 
 	return true;
 }
+
 void SinbadMan::frameRendered(const Ogre::FrameEvent & evt) {
-	RunBaseState->addTime(evt.timeSinceLastFrame);
-	RunTopState->addTime(evt.timeSinceLastFrame);
-	animationState->addTime(evt.timeSinceLastFrame);
+	if (estadoActual==CORRER) {
+		RunBaseState->addTime(evt.timeSinceLastFrame);
+		RunTopState->addTime(evt.timeSinceLastFrame);
+		animationState->addTime(evt.timeSinceLastFrame);
+	}
+	else if (estadoActual == BOMBA) {
+		if (!animationStateBomb->hasEnded()) {
+			RunBaseState->addTime(evt.timeSinceLastFrame);
+			RunTopState->addTime(evt.timeSinceLastFrame);
+			animationStateBomb->addTime(evt.timeSinceLastFrame);
+		}
+		else {
+			RunBaseState->setEnabled(false);
+			RunTopState->setEnabled(false);
+			animationStateBomb->setEnabled(false);
+			estadoActual = MUERTO;
+			node->pitch(Degree(-90));
+			node->translate(Vector3(0, -4, 0));
+		}
+	}
+	else if (estadoActual == MUERTO) {
+		node->translate(Vector3(0, 0, -0.03));
+	}
+}
+
+void SinbadMan::interact(const Ogre::String nombre)
+{
+	//Parar o empezar a correr en el cuadrado
+	if (nombre == "Sinbad" && estadoActual != BOMBA) {
+		estadoActual = (estadoActual == PARAR) ? CORRER : PARAR;
+		bool toggle = !animationState->getEnabled();
+		RunBaseState->setEnabled(toggle);
+		RunTopState->setEnabled(toggle);
+		animationState->setEnabled(toggle);
+	}
+	//Ir a la bomba
+	else if (nombre == "eBomb") {
+		estadoActual = BOMBA;
+		ent->detachObjectFromBone(espadaR);
+		ent->attachObjectToBone("Handle.R", espadaR);
+		animationState->setEnabled(false);
+
+		//ANIMACION BOMBA
+		Real duracion = 8;
+		Animation * animationBomb = node->getCreator()->createAnimation("animSinbadBomb", duracion);
+		NodeAnimationTrack * track = animationBomb->createNodeTrack(0);
+		track->setAssociatedNode(node->getCreator()->getSceneNode("nSinbadMan"));
+
+		Vector3 keyframePos(node->getPosition());
+		TransformKeyFrame * kf; // 5 keyFrames: origen(0), arriba, origen, abajo, origen(4)
+
+		kf = track->createNodeKeyFrame(0); // Keyframe 0: origen.
+		kf->setRotation(node->getOrientation());
+		kf->setTranslate(node->getPosition()); // Origen: Vector3
+
+		kf = track->createNodeKeyFrame(duracion/2); // Keyframe 0: origen.
+		
+		Vector3 aux = node->getPosition() - node->getCreator()->getSceneNode("nBomb")->getPosition();
+		Real radio = sqrt(pow(aux.x, 2) + pow(aux.z, 2));
+		float grado = acos(node->getPosition().x / radio);
+		kf->setRotation(Quaternion(Radian(grado - node->getOrientation().y), Ogre::Vector3::UNIT_Y));
+		kf->setTranslate(node->getPosition()); // Origen: Vector3
+
+		kf = track->createNodeKeyFrame(duracion); // Keyframe 0: origen.
+		kf->setRotation(Quaternion(Radian(grado), Ogre::Vector3::UNIT_Y));
+		kf->setTranslate(Vector3(node->getCreator()->getSceneNode("nBomb")->getPosition())); // Origen: Vector3
+
+		animationStateBomb = node->getCreator()->createAnimationState("animSinbadBomb");
+		animationStateBomb->setLoop(false);
+		animationStateBomb->setEnabled(true);
+		
+	}
 }

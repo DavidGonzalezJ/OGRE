@@ -18,7 +18,6 @@ class ObjectMan
 {
 public:
 	ObjectMan(Ogre::SceneNode* scnNode);
-	static const Ogre::uint32 MY_QUERY_MASK = 1; // << 0;
 
 	virtual bool mousePicking(const OgreBites::MouseButtonEvent& evt)
 	{
@@ -26,7 +25,12 @@ public:
 	};
 	virtual void frameRendered(const Ogre::FrameEvent & evt) { };
 	virtual void setObjMan(Ogre::MovableObject* mObj);
+	virtual void interact(Ogre::String nombre) { };
 	virtual ~ObjectMan();
+	enum QueryFlags {
+		MY_QUERY_IGNORE = 1 << 1,
+		MY_QUERY_INTERACT = 1 << 0
+	};
 protected:
 	Ogre::SceneNode* node = nullptr;
 	UserControl* control = nullptr;
