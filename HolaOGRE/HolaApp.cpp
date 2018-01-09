@@ -172,7 +172,7 @@ void HolaApp::setupScene(void)
   addInputListener(sinBadMgr);
 
   //Mosca
-  Ogre::SceneNode* nodeKnot = scnMgr->getRootSceneNode()->createChildSceneNode("nKnot");
+  Ogre::SceneNode* nodeKnot = nodeSinbad->createChildSceneNode("nKnot");
   knotMgr = new KnotFly(nodeKnot);
   vecObjMan.push_back(knotMgr);
 

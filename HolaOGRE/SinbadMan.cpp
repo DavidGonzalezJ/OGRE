@@ -10,6 +10,7 @@ SinbadMan::SinbadMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	ent = node->getCreator()->createEntity("Sinbad", "Sinbad.mesh");
 	ent->setQueryFlags(MY_QUERY_INTERACT);
 	setObjMan(ent);
+
 	RunTopState = ent->getAnimationState("RunTop");
 	RunTopState->setLoop(true);
 	RunTopState->setEnabled(true);
@@ -17,6 +18,10 @@ SinbadMan::SinbadMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	RunBaseState = ent->getAnimationState("RunBase");
 	RunBaseState->setLoop(true);
 	RunBaseState->setEnabled(true);
+
+	SwordState = ent->getAnimationState("DrawSwords");
+	SwordState->setLoop(true);
+	SwordState->setEnabled(false);
 
 	espadaL = node->getCreator()->createEntity("espadaL", "Sword.mesh");
 	ent->attachObjectToBone("Handle.L", espadaL);
@@ -145,6 +150,7 @@ void SinbadMan::frameRendered(const Ogre::FrameEvent & evt) {
 	}
 	else if (estadoActual == BOMBA) {
 		if (!animationStateBomb->hasEnded()) {
+			SwordState->addTime(evt.timeSinceLastFrame);
 			RunBaseState->addTime(evt.timeSinceLastFrame);
 			RunTopState->addTime(evt.timeSinceLastFrame);
 			animationStateBomb->addTime(evt.timeSinceLastFrame);
@@ -166,7 +172,7 @@ void SinbadMan::frameRendered(const Ogre::FrameEvent & evt) {
 void SinbadMan::interact(const Ogre::String nombre)
 {
 	//Parar o empezar a correr en el cuadrado
-	if (nombre == "Sinbad" && estadoActual != BOMBA) {
+	if (nombre == "Sinbad" && estadoActual != BOMBA && estadoActual!=MUERTO) {
 		estadoActual = (estadoActual == PARAR) ? CORRER : PARAR;
 		bool toggle = !animationState->getEnabled();
 		RunBaseState->setEnabled(toggle);
@@ -179,7 +185,16 @@ void SinbadMan::interact(const Ogre::String nombre)
 		ent->detachObjectFromBone(espadaR);
 		ent->attachObjectToBone("Handle.R", espadaR);
 		animationState->setEnabled(false);
+		SwordState->setEnabled(true);
+		
+		Quaternion antes = node->getOrientation();
+		node->lookAt(Vector3(node->getCreator()->getSceneNode("nBomb")->getPosition().x, node->getPosition().y, node->getCreator()->getSceneNode("nBomb")->getPosition().z),
+			Node::TS_WORLD
+			);
+		node->rotate(Quaternion(Degree(180),Vector3::UNIT_Y));
+		Quaternion despues = node->getOrientation();
 
+		node->setOrientation(antes);
 		//ANIMACION BOMBA
 		Real duracion = 8;
 		Animation * animationBomb = node->getCreator()->createAnimation("animSinbadBomb", duracion);
@@ -190,19 +205,21 @@ void SinbadMan::interact(const Ogre::String nombre)
 		TransformKeyFrame * kf; // 5 keyFrames: origen(0), arriba, origen, abajo, origen(4)
 
 		kf = track->createNodeKeyFrame(0); // Keyframe 0: origen.
-		kf->setRotation(node->getOrientation());
+		kf->setRotation(antes);
 		kf->setTranslate(node->getPosition()); // Origen: Vector3
 
 		kf = track->createNodeKeyFrame(duracion/2); // Keyframe 0: origen.
 		
-		Vector3 aux = node->getPosition() - node->getCreator()->getSceneNode("nBomb")->getPosition();
-		Real radio = sqrt(pow(aux.x, 2) + pow(aux.z, 2));
-		float grado = acos(node->getPosition().x / radio);
-		kf->setRotation(Quaternion(Radian(grado - node->getOrientation().y), Ogre::Vector3::UNIT_Y));
+		Vector3 mDirection = node->getCreator()->getSceneNode("nBomb")->getPosition()-node->getPosition();
+
+		Ogre::Vector3 src = node->getOrientation() * Ogre::Vector3::UNIT_X;
+		Ogre::Quaternion quat = src.getRotationTo(mDirection,node->getOrientation().yAxis());
+		kf->setRotation(despues);
 		kf->setTranslate(node->getPosition()); // Origen: Vector3
 
 		kf = track->createNodeKeyFrame(duracion); // Keyframe 0: origen.
-		kf->setRotation(Quaternion(Radian(grado), Ogre::Vector3::UNIT_Y));
+		kf->setRotation(node->getOrientation());
+		kf->setRotation(despues);
 		kf->setTranslate(Vector3(node->getCreator()->getSceneNode("nBomb")->getPosition())); // Origen: Vector3
 
 		animationStateBomb = node->getCreator()->createAnimationState("animSinbadBomb");

@@ -1,4 +1,5 @@
 #include "BombMan.h"
+#include <iostream>
 using namespace Ogre;
 
 
@@ -11,7 +12,7 @@ BombMan::BombMan(Ogre::SceneNode* scnMngr) : ObjectMan(scnMngr)
 	setObjMan(ent);
 
 	pSys = node->getCreator()->createParticleSystem("parSys", "Smoke");
-	
+	pSys->setQueryFlags(MY_QUERY_IGNORE);
 	node->attachObject(pSys);
 	pSys->setEmitting(false);
 }
@@ -32,6 +33,7 @@ void BombMan::interact(Ogre::String nombre)
 {
 	if (nombre == "eBomb" && estadoActual != EXPLOTADA) {
 		estadoActual = EXPLOTADA;
+		ent->setQueryFlags(MY_QUERY_IGNORE);
 		pSys->setEmitting(true);
 	}
 }

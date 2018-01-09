@@ -20,6 +20,7 @@ public:
 	Ogre::Vector3 posicion;
 	Ogre::Entity* ent = nullptr;
 	Ogre::AnimationState* RunTopState = nullptr;
+	Ogre::AnimationState* SwordState = nullptr;
 	Ogre::AnimationState* RunBaseState = nullptr;
 	Ogre::MovableObject* espadaR = nullptr;
 	Ogre::MovableObject* espadaL = nullptr;
