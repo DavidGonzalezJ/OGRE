@@ -40,8 +40,8 @@ material "Floor"
 			texture_unit // Texture unit 0
    			{ 
     				texture RustedMetal.jpg
-    				rotate_anim 0.1 0.0
-    				color_op add
+    				rotate_anim 0.1
+    				colour_op add
    			}
 
    			texture_unit // Texture unit 1 (this is a multitexture pass)
@@ -55,92 +55,21 @@ material "Floor"
 		}
   	}
 }
-
-vertex_program vertexShaderE2 glsl
-{
-	source vertexShaderE2glsl.txt //archivo
-	default_params //valores para las variables uniform
-	{
-		param_named_auto modelVierProjMat worldviewproj_matrix
-	}
-}
-
-fragment_program fragmentShaderE2 glsl
-{
-	source fragmentShaderE2glsl.txt //archivo
-	default_params //valores para las variables
-	{
-		param_named textura1 int 0
-		param_named textura2 int 1
-		param_named FB float 0.5
-		param_named intLuz float 1.0;
-
-	}
-}
-нн
-material ejemploShadersE2
+material "Smoke"
 {
 	technique
 	{
 		pass
 		{
-			vertex_program_ref vertexShaderE2
-			{
-				//params
-			}
-			fragment_program_ref fragmentShaderE2
-			{
-				//params
-			}
-			texture_unit texture1
-			{
-				texture ejemplo1.jpg 2d //archivo
-				tex_address_mode clamp
-				filtering bilinear
-			}
-			texture_unit texture2
-			{
-				texture ejemplo2.jpg 2d //archivo
-				tex_address_mode wrap
-			}
-		}
-	}
-}
-
-vertex_program MandelbrotVS1 glsl
-{
-	source MandelbrotVS1.txt
-	default_params
-	{
-		param_named_auto modelViewProjMat worldviewproj_matrix
-	}
-}
-
-fragment_program MandelbrotFS1 glsl
-{
-	source MandelbrotFS1.txt
-	default_params
-	{
-		param_named InColor float4 0.5 0.5 1.0 1.0
-		param_named OutColor1 float4 0.5 0.25 1.0 1.0
-		param_named OutColor2 float4 1.0 0.5 0.25 1.0
-	}
-}
-
-material mandelbrot1
-{
-	technique
-	{
-		pass
-		{
+			lighting off
+			scene_blend alpha_blend
 			depth_write off
-			vertex_program_ref MandelbrotVS1
+			diffuse vertexcolour
+			texture_unit
 			{
-			}
-			fragment_program_ref MandelbrotFS1
-			{
+				texture smoke.png
+				tex_address_mode clamp
 			}
 		}
 	}
-}
-			
+}	
