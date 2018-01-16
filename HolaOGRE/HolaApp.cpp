@@ -1,4 +1,4 @@
-#include "HolaApp.h"
+ï»¿#include "HolaApp.h"
 #include <iostream>
 using namespace Ogre;
 enum QueryFlags {
@@ -116,7 +116,7 @@ void HolaApp::setup(void)
 
   trayMgr = new OgreBites::TrayManager("TrayGUISystem", mWindow);
   trayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
-  //Añadimos el objeto a la lista de observdores
+  //AÃ±adimos el objeto a la lista de observdores
   addInputListener(trayMgr);
 
   setupScene();
@@ -126,7 +126,7 @@ void HolaApp::setupScene(void)
 {
   // without light we would just get a black screen    
   Light* light = scnMgr->createLight("Light");
-  light->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Z); // !!! opngl <-> dirección a la fuente de luz
+  light->setDirection(Ogre::Vector3::NEGATIVE_UNIT_Z); // !!! opngl <-> direcciÃ³n a la fuente de luz
   lightNode = scnMgr->getRootSceneNode()->createChildSceneNode();
   lightNode->setPosition(0, 0, 100);
   lightNode->attachObject(light);
@@ -185,7 +185,13 @@ void HolaApp::setupScene(void)
   Ogre::SceneNode* nodePlane = scnMgr->getRootSceneNode()->createChildSceneNode("nPlane");
   planeMgr = new ReflejoMan(nodeSinbad);
   vecObjMan.push_back(planeMgr);
-
- //RAYO
-	rayScnQuery = scnMgr->createRayQuery(Ray(), MY_QUERY_INTERACT);
+  //RAYO
+  rayScnQuery = scnMgr->createRayQuery(Ray(), MY_QUERY_INTERACT);
+  //SKYPLANE
+  scnMgr->setSkyPlane(true, Plane(Vector3::UNIT_Z, -20), "mandelbrot1", 1, 1, true, 0.0, 100, 100);
+  // enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
+  // bow = 0, xsegments = 1, ysegments = 1,...
+  // RenderQueueGroup->RENDER_QUEUE_SKIES_EARLY
+  // scnMgr->setSkyBox(true, "Mandelbrot", );
+  // scnMgr->setSkyDome(true, "Mandelbrot", ); 
 }
