@@ -1,12 +1,17 @@
-#version 330 core
+﻿#version 330 core
 in vec2 vUv0;
+uniform sampler2D textura1;
+uniform float FB;
 uniform vec4 InColor;
 uniform vec4 OutColor1;
 uniform vec4 OutColor2;
+uniform float intLuz;
 const int MaxIter = 500;
 out vec4 fFragColor;
 
 void main(){
+	vec4 color1 = vec4(texture2D(textura1, vUv0)) * intLuz; //Luz
+
 	float Creal = vUv0.s -1.5;
 	float Cimag = vUv0.t;
 	float real = Creal; //Zr
@@ -24,5 +29,6 @@ void main(){
 	vec4 color = InColor;
 	if(z2 >4.0)
 		color = mix(OutColor1, OutColor2 , fract(float(iter)*0.04));
-	fFragColor = color;
+	vec4 colorF = mix(color, color1, FB); //(1‐FB).C1+FB.C2
+	fFragColor = colorF;
 }

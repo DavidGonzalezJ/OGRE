@@ -12,9 +12,12 @@ fragment_program MandelbrotFS1 glsl
 	source MandelbrotFS1.txt
 	default_params
 	{
+		param_named textura1 int 0
 		param_named InColor float4 0.5 0.5 1.0 1.0
 		param_named OutColor1 float4 0.5 0.25 1.0 1.0
 		param_named OutColor2 float4 1.0 0.5 0.25 1.0
+		param_named_auto FB time_0_1 10
+		param_named intLuz float 1.0;
 	}
 }
 
@@ -30,6 +33,12 @@ material "mandelbrot1"
 			}
 			fragment_program_ref MandelbrotFS1
 			{
+			}
+			texture_unit texture1
+			{   
+				texture flare.png 2d // archivo
+				tex_address_mode clamp
+				filtering bilinear
 			}
 		}
 	}
