@@ -11,10 +11,10 @@ out vec4 fFragColor;
 uniform float Zoom;
 
 void main(){
-	float Creal = vUv0.s - 1.5/**Zoom*/;
+	float Creal = vUv0.s - 1.5;
 	float Cimag = vUv0.t;
-	//Creal*=(Zoom-1);
-	//Cimag*=(Zoom-1);
+	Creal*=1-Zoom;
+	Cimag*=1-Zoom;
 	float real = Creal; //Zr
 	float imag = Cimag; //Zi
 	float z2 = 0.0; //Z^2
@@ -30,6 +30,9 @@ void main(){
 	vec4 color = InColor;
 	if(z2 >4.0)
 		color = mix(OutColor1, OutColor2 , fract(float(iter)*0.04));
-	vec4 colorF = mix(color, color1, FB); //(1‐FB).C1+FB.C2
-	fFragColor = colorF;
+
+	vec4 colorTex = vec4(texture2D(textura1,vUv0))* intLuz; //La luz sale un poco en Cuenca
+	vec4 colorFin = color * colorTex;
+
+	fFragColor = colorFin;
 }
