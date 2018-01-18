@@ -188,7 +188,7 @@ void HolaApp::setupScene(void)
   //RAYO
   rayScnQuery = scnMgr->createRayQuery(Ray(), MY_QUERY_INTERACT);
   //SKYPLANE
-  scnMgr->setSkyPlane(true, Plane(Vector3::UNIT_Z, -20), "mandelbrot1", 1, 1, true, 0.0, 100, 100);
+  scnMgr->setSkyPlane(true, Plane(Vector3::UNIT_Z, -20), "mandelbrot1", 1.0, 1, true, 1.0, 100, 100);
   // enable, plane, materialName, scale = 1000, tiling = 10, drawFirst,
   // bow = 0, xsegments = 1, ysegments = 1,...
   // RenderQueueGroup->RENDER_QUEUE_SKIES_EARLY

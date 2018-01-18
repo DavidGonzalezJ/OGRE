@@ -1,20 +1,21 @@
-﻿#version 330 core
+#version 330 core
 in vec2 vUv0;
-uniform sampler2D textura1;
-uniform float FB;
+in vec2 vUv1;
 uniform vec4 InColor;
 uniform vec4 OutColor1;
 uniform vec4 OutColor2;
-uniform float intLuz;
 const int MaxIter = 500;
 out vec4 fFragColor;
+uniform sampler2D textura1;
+uniform float FB;
+uniform float intLuz;
 uniform float Zoom;
 
 void main(){
 	float Creal = vUv0.s - 1.5;
 	float Cimag = vUv0.t;
-	Creal*=1-Zoom;
-	Cimag*=1-Zoom;
+	Creal += Zoom;
+	Cimag += Zoom;
 	float real = Creal; //Zr
 	float imag = Cimag; //Zi
 	float z2 = 0.0; //Z^2
@@ -30,9 +31,8 @@ void main(){
 	vec4 color = InColor;
 	if(z2 >4.0)
 		color = mix(OutColor1, OutColor2 , fract(float(iter)*0.04));
-
-	vec4 colorTex = vec4(texture2D(textura1,vUv0))* intLuz; //La luz sale un poco en Cuenca
-	vec4 colorFin = color * colorTex;
-
-	fFragColor = colorFin;
+	vec4 colorTex = vec4(texture2D(textura1,vUv1));
+	color *= colorTex;
+	
+	fFragColor = color;
 }
